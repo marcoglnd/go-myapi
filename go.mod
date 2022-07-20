@@ -1,6 +1,6 @@
 module github.com/marcoglnd/go-myapi
 
-go 1.18
+go 1.17
 
 require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
