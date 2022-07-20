@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/marcoglnd/go-myapi/controller"
+	controller "github.com/marcoglnd/go-myapi/internal/webapp"
 )
 
 type Response struct {
