@@ -13,10 +13,15 @@ type Response struct {
 	Data string `json:"data"`
 }
 
-type BitcoinResponse struct {
-	Bitcoin struct {
-		Usd int `json:"usd"`
-	} `json:"bitcoin"`
+type CryptoResponse struct {
+	ID         string `json:"id"`
+	Symbol     string `json:"symbol"`
+	MarketData struct {
+		CurrentPrice struct {
+			Usd float64 `json:"usd"`
+		} `json:"current_price"`
+	} `json:"market_data"`
+	Partial bool `json:"partial"`
 }
 
 func ReturnData() gin.HandlerFunc {
@@ -29,9 +34,11 @@ func ReturnData() gin.HandlerFunc {
 			return
 		}
 
-		resp, err := http.Get("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd")
+		var cryptoResponse CryptoResponse
+		resp, err := http.Get("https://api.coingecko.com/api/v3/coins/bitcoin")
 		if err != nil {
-			ctx.JSON(http.StatusPartialContent, nil)
+			cryptoResponse.Partial = true
+			ctx.JSON(http.StatusPartialContent, cryptoResponse)
 			return
 		}
 
@@ -40,20 +47,11 @@ func ReturnData() gin.HandlerFunc {
 			log.Fatal(err)
 		}
 
-		var bitResponse BitcoinResponse
-		e := json.Unmarshal(body, &bitResponse)
+		e := json.Unmarshal(body, &cryptoResponse)
 		if e != nil {
-			log.Fatal(err)
+			log.Fatal(e)
 		}
 
-		ctx.JSON(http.StatusOK, bitResponse)
+		ctx.JSON(http.StatusOK, cryptoResponse)
 	}
 }
-
-// func MainController() gin.HandlerFunc {
-// 	return func(ctx *gin.Context) {
-// 		if ctx.Query("data") != "" {
-// 			ReturnData()
-// 		}
-// 	}
-// }
