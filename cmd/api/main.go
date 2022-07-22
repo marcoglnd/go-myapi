@@ -16,7 +16,7 @@ func main() {
 	r := gin.Default()
 	r.GET("/myapi", webappController.GetData())
 	r.GET("/crypto/:id", webappController.GetCryptoById())
-	// r.GET("/randomcrypto", webappController.GetRandomCrypto())
+	r.GET("/randomcrypto", webappController.GetRandomCrypto())
 
 	r.Run()
 }

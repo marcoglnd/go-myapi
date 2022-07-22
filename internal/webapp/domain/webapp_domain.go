@@ -1,7 +1,5 @@
 package domain
 
-import "context"
-
 type CryptoResponse struct {
 	ID         string `json:"id"`
 	Symbol     string `json:"symbol"`
@@ -14,5 +12,5 @@ type CryptoResponse struct {
 }
 
 type WebappService interface {
-	GetCryptoById(ctx context.Context, url string) (CryptoResponse, error)
+	GetCryptoById(url string) (CryptoResponse, error)
 }

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -16,7 +15,7 @@ func NewWebappService() *webappService {
 	return &webappService{}
 }
 
-func (w webappService) GetCryptoById(ctx context.Context, url string) (domain.CryptoResponse, error) {
+func (w webappService) GetCryptoById(url string) (domain.CryptoResponse, error) {
 	var cryptoResponse domain.CryptoResponse
 	resp, err := http.Get(url)
 	if err != nil {
