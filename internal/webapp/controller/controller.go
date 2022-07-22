@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/marcoglnd/go-myapi/internal/webapp/domain"
@@ -53,16 +54,26 @@ func (w WebappController) GetCryptoById() gin.HandlerFunc {
 	}
 }
 
+func (w WebappController) GetCryptoChannel(id string, ch chan<- domain.CryptoResponse, wg *sync.WaitGroup) {
+	defer wg.Done()
+	url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s", id)
+	resp, _ := w.webapp.GetCryptoById(url)
+	ch <- resp
+}
+
 func (w WebappController) GetRandomCrypto() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		var wg sync.WaitGroup
 		var resp []domain.CryptoResponse
-		resp1, err1 := w.GetCrypto("bitcoin")
-		resp2, err2 := w.GetCrypto("ethereum")
-		resp3, err3 := w.GetCrypto("solana")
-		resp = append(resp, resp1, resp2, resp3)
-		if err1 != nil || err2 != nil || err3 != nil {
-			ctx.JSON(http.StatusPartialContent, resp)
-			return
+		wg.Add(3)
+		ch := make(chan domain.CryptoResponse, 3)
+		go w.GetCryptoChannel("bitcoin", ch, &wg)
+		go w.GetCryptoChannel("ethereum", ch, &wg)
+		go w.GetCryptoChannel("solana", ch, &wg)
+		wg.Wait()
+		close(ch)
+		for i := 0; i < 3; i++ {
+			resp = append(resp, <-ch)
 		}
 		ctx.JSON(http.StatusOK, resp)
 	}
