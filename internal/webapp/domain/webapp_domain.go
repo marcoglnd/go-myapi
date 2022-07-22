@@ -1,5 +1,7 @@
 package domain
 
+import "sync"
+
 type CryptoResponse struct {
 	ID         string `json:"id"`
 	Symbol     string `json:"symbol"`
@@ -13,4 +15,7 @@ type CryptoResponse struct {
 
 type WebappService interface {
 	GetCryptoById(url string) (CryptoResponse, error)
+	GetCrypto(id string) (CryptoResponse, error)
+	GetCryptoChannel(id string, ch chan<- CryptoResponse, wg *sync.WaitGroup)
+	GetRandomCrypto() []CryptoResponse
 }
