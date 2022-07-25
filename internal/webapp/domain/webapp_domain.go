@@ -23,7 +23,7 @@ type CryptoResponse struct {
 
 type WebappService interface {
 	GetCryptoById(url string) (CryptoResponse, error)
-	GetCrypto(id string) (*CryptoResponse, error)
+	GetCryptoUrl(id string) string
 	GetCryptoChannel(id string, ch chan<- CryptoResponse, wg *sync.WaitGroup)
 	GetRandomCrypto() []CryptoResponse
 }

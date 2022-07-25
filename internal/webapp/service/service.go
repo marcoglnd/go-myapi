@@ -17,15 +17,23 @@ func NewWebappService() *webappService {
 	return &webappService{}
 }
 
-func (w webappService) GetCryptoById(url string) (domain.CryptoResponse, error) {
+func (w webappService) GetCryptoUrl(id string) string {
+	url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s", id)
+	return url
+}
+
+func (w webappService) GetCryptoById(id string) (domain.CryptoResponse, error) {
+	url := w.GetCryptoUrl(id)
 	var cryptoResponse domain.CryptoResponse
 	resp, err := http.Get(url)
+
 	if err != nil {
 		cryptoResponse.Partial = true
 		return cryptoResponse, err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
+	fmt.Println(body)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,19 +46,9 @@ func (w webappService) GetCryptoById(url string) (domain.CryptoResponse, error) 
 	return cryptoResponse, nil
 }
 
-func (w webappService) GetCrypto(id string) (*domain.CryptoResponse, error) {
-	url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s", id)
-	resp, err := w.GetCryptoById(url)
-	if err != nil {
-		return &resp, err
-	}
-	return &resp, nil
-}
-
 func (w webappService) GetCryptoChannel(id string, ch chan<- domain.CryptoResponse, wg *sync.WaitGroup) {
 	defer wg.Done()
-	url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s", id)
-	resp, _ := w.GetCryptoById(url)
+	resp, _ := w.GetCryptoById(id)
 	ch <- resp
 }
 

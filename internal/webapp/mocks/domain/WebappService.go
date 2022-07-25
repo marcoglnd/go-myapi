@@ -14,29 +14,6 @@ type WebappService struct {
 	mock.Mock
 }
 
-// GetCrypto provides a mock function with given fields: id
-func (_m *WebappService) GetCrypto(id string) (*domain.CryptoResponse, error) {
-	ret := _m.Called(id)
-
-	var r0 *domain.CryptoResponse
-	if rf, ok := ret.Get(0).(func(string) *domain.CryptoResponse); ok {
-		r0 = rf(id)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.CryptoResponse)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(id)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // GetCryptoById provides a mock function with given fields: url
 func (_m *WebappService) GetCryptoById(url string) (domain.CryptoResponse, error) {
 	ret := _m.Called(url)
@@ -61,6 +38,20 @@ func (_m *WebappService) GetCryptoById(url string) (domain.CryptoResponse, error
 // GetCryptoChannel provides a mock function with given fields: id, ch, wg
 func (_m *WebappService) GetCryptoChannel(id string, ch chan<- domain.CryptoResponse, wg *sync.WaitGroup) {
 	_m.Called(id, ch, wg)
+}
+
+// GetCryptoUrl provides a mock function with given fields: id
+func (_m *WebappService) GetCryptoUrl(id string) string {
+	ret := _m.Called(id)
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func(string) string); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	return r0
 }
 
 // GetRandomCrypto provides a mock function with given fields:

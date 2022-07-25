@@ -61,9 +61,9 @@ func TestGetCryptoById(t *testing.T) {
 		}
 
 		mockService := mocks.NewWebappService(t)
-		mockService.On("GetCrypto",
+		mockService.On("GetCryptoById",
 			mock.AnythingOfType("string"),
-		).Return(&mockCrypto, nil).Once()
+		).Return(mockCrypto, nil).Once()
 
 		payload, err := json.Marshal(mockCrypto)
 		assert.NoError(t, err)
@@ -84,4 +84,6 @@ func TestGetCryptoById(t *testing.T) {
 
 		mockService.AssertExpectations(t)
 	})
+
+	// t.Run("")
 }

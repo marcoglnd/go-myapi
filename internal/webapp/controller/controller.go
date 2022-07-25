@@ -29,7 +29,7 @@ func (w WebappController) GetData() gin.HandlerFunc {
 func (w WebappController) GetCryptoById() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
-		resp, err := w.webapp.GetCrypto(id)
+		resp, err := w.webapp.GetCryptoById(id)
 		if err != nil {
 			ctx.JSON(http.StatusPartialContent, resp)
 			return
