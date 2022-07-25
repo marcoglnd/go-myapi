@@ -1,9 +1,10 @@
 package main
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
-	controller "github.com/marcoglnd/go-myapi/internal/webapp/controller"
-	"github.com/marcoglnd/go-myapi/internal/webapp/service"
+	"github.com/marcoglnd/go-myapi/cmd/api/routes"
 )
 
 type Response struct {
@@ -11,12 +12,13 @@ type Response struct {
 }
 
 func main() {
-	webappService := service.NewWebappService()
-	webappController := controller.NewWebappController(webappService)
-	r := gin.Default()
-	r.GET("/myapi", webappController.GetData())
-	r.GET("/crypto/:id", webappController.GetCryptoById())
-	r.GET("/randomcrypto", webappController.GetRandomCrypto())
+	PATH := "api/v1"
+	router := gin.Default()
+	routerGroup := router.Group(PATH)
+	routes.AddRoutes(routerGroup)
+	err := router.Run()
 
-	r.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
