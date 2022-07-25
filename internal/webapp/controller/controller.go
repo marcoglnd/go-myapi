@@ -11,10 +11,6 @@ type WebappController struct {
 	webapp domain.WebappService
 }
 
-type DataResponse struct {
-	Data string `json:"data"`
-}
-
 func NewWebappController(webapp domain.WebappService) *WebappController {
 	return &WebappController{
 		webapp: webapp,
@@ -23,7 +19,7 @@ func NewWebappController(webapp domain.WebappService) *WebappController {
 
 func (w WebappController) GetData() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		response := DataResponse{
+		response := domain.DataResponse{
 			Data: ctx.Query("data"),
 		}
 		ctx.JSON(http.StatusOK, response)

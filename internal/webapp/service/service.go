@@ -38,13 +38,13 @@ func (w webappService) GetCryptoById(url string) (domain.CryptoResponse, error) 
 	return cryptoResponse, nil
 }
 
-func (w webappService) GetCrypto(id string) (domain.CryptoResponse, error) {
+func (w webappService) GetCrypto(id string) (*domain.CryptoResponse, error) {
 	url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s", id)
 	resp, err := w.GetCryptoById(url)
 	if err != nil {
-		return resp, err
+		return &resp, err
 	}
-	return resp, nil
+	return &resp, nil
 }
 
 func (w webappService) GetCryptoChannel(id string, ch chan<- domain.CryptoResponse, wg *sync.WaitGroup) {
