@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -44,46 +45,77 @@ func TestGetData(t *testing.T) {
 }
 
 func TestGetCryptoById(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		mockCurrentPrice := domain.CurrentPrice{
-			Usd: 21914,
-		}
+	mockCurrentPrice := domain.CurrentPrice{
+		Usd: 21914,
+	}
 
-		mockMarketData := domain.MarketData{
-			CurrentPrice: mockCurrentPrice,
-		}
+	mockMarketData := domain.MarketData{
+		CurrentPrice: mockCurrentPrice,
+	}
 
-		mockCrypto := domain.CryptoResponse{
-			ID:         "bitcoin",
-			Symbol:     "btc",
-			MarketData: mockMarketData,
-			Partial:    false,
-		}
+	mockCrypto := domain.CryptoResponse{
+		ID:         "bitcoin",
+		Symbol:     "btc",
+		MarketData: mockMarketData,
+		Partial:    false,
+	}
 
-		mockService := mocks.NewWebappService(t)
-		mockService.On("GetCryptoById",
-			mock.AnythingOfType("string"),
-		).Return(mockCrypto, nil).Once()
+	type expected struct {
+		status int
+		err    assert.ValueAssertionFunc
+	}
 
-		payload, err := json.Marshal(mockCrypto)
-		assert.NoError(t, err)
+	tests := []struct {
+		name       string
+		serviceRes error
+		want       expected
+		method     string
+		PATH       string
+		route      string
+	}{
+		{
+			name:       "success",
+			serviceRes: nil,
+			want:       expected{status: http.StatusOK, err: assert.Nil},
+			method:     http.MethodGet,
+			PATH:       fmt.Sprintf("/api/v1/crypto/%v", mockCrypto.ID),
+			route:      "/api/v1/crypto/:id",
+		},
+		{
+			name:       "partial content",
+			serviceRes: errors.New("bad request"),
+			want:       expected{status: http.StatusPartialContent, err: assert.Nil},
+			method:     http.MethodGet,
+			PATH:       fmt.Sprintf("/api/v1/crypto/%v", "aaa"),
+			route:      "/api/v1/crypto/:id",
+		},
+	}
 
-		PATH := fmt.Sprintf("/crypto/%v", mockCrypto.ID)
-		req := httptest.NewRequest(http.MethodGet, PATH, bytes.NewBuffer(payload))
-		rec := httptest.NewRecorder()
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			mockService := mocks.NewWebappService(t)
+			mockService.On("GetCryptoById",
+				mock.AnythingOfType("string"),
+			).Return(mockCrypto, tt.serviceRes).Once()
 
-		_, engine := gin.CreateTestContext(rec)
+			payload, err := json.Marshal(mockCrypto)
+			assert.NoError(t, err)
 
-		webappController := WebappController{webapp: mockService}
+			req := httptest.NewRequest(tt.method, tt.PATH, bytes.NewBuffer(payload))
+			rec := httptest.NewRecorder()
 
-		engine.GET("/crypto/:id", webappController.GetCryptoById())
+			_, engine := gin.CreateTestContext(rec)
 
-		engine.ServeHTTP(rec, req)
+			webappController := WebappController{webapp: mockService}
 
-		assert.Equal(t, http.StatusOK, rec.Code)
+			engine.GET(tt.route, webappController.GetCryptoById())
 
-		mockService.AssertExpectations(t)
-	})
+			engine.ServeHTTP(rec, req)
 
-	// t.Run("")
+			assert.Equal(t, tt.want.status, rec.Code)
+
+			mockService.AssertExpectations(t)
+		})
+	}
 }
