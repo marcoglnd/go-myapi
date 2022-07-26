@@ -18,22 +18,23 @@ func NewWebappService() *webappService {
 }
 
 func (w webappService) GetCryptoUrl(id string) string {
-	url := fmt.Sprintf("aaa%s", id)
+	url := fmt.Sprintf("https://api.coingecko.com/api/v3/coins/%s", id)
 	return url
 }
 
 func (w webappService) GetCryptoById(id string) (domain.CryptoResponse, error) {
+	defer recover()
 	url := w.GetCryptoUrl(id)
 	var cryptoResponse domain.CryptoResponse
 	resp, err := http.Get(url)
 
 	if err != nil {
+		cryptoResponse.ID = id
 		cryptoResponse.Partial = true
 		return cryptoResponse, err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
-	fmt.Println(body)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,8 +50,10 @@ func (w webappService) GetCryptoById(id string) (domain.CryptoResponse, error) {
 func (w webappService) GetCryptoChannel(id string, ch chan<- domain.CryptoResponse, wg *sync.WaitGroup) {
 	defer w.Recover(id, ch)
 	defer wg.Done()
-	resp, _ := w.GetCryptoById(id)
-	fmt.Println(resp)
+	resp, err := w.GetCryptoById(id)
+	if err != nil {
+		panic(err)
+	}
 	ch <- resp
 }
 

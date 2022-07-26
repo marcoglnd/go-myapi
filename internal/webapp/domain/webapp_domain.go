@@ -7,17 +7,17 @@ type DataResponse struct {
 }
 
 type CurrentPrice struct {
-	Usd float64 `json:"usd"`
+	Usd float64 `json:"usd,omitempty"`
 }
 
 type MarketData struct {
-	CurrentPrice CurrentPrice `json:"current_price"`
+	CurrentPrice CurrentPrice `json:"current_price,omitempty"`
 }
 
 type CryptoResponse struct {
 	ID         string     `json:"id"`
-	Symbol     string     `json:"symbol"`
-	MarketData MarketData `json:"market_data"`
+	Symbol     string     `json:"symbol,omitempty"`
+	MarketData MarketData `json:"market_data,omitempty"`
 	Partial    bool       `json:"partial"`
 }
 
