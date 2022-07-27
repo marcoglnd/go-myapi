@@ -150,6 +150,27 @@ func TestGetRandomCrypto(t *testing.T) {
 		},
 	}
 
+	mockCryptoPartial := []domain.CryptoResponse{
+		{
+			ID:         "bitcoin",
+			Symbol:     "btc",
+			MarketData: mockMarketData,
+			Partial:    true,
+		},
+		{
+			ID:         "ethereum",
+			Symbol:     "eth",
+			MarketData: mockMarketData,
+			Partial:    true,
+		},
+		{
+			ID:         "solana",
+			Symbol:     "sol",
+			MarketData: mockMarketData,
+			Partial:    false,
+		},
+	}
+
 	type expected struct {
 		status int
 		err    assert.ValueAssertionFunc
@@ -158,6 +179,7 @@ func TestGetRandomCrypto(t *testing.T) {
 	tests := []struct {
 		name       string
 		serviceRes error
+		mock       []domain.CryptoResponse
 		want       expected
 		method     string
 		PATH       string
@@ -165,7 +187,16 @@ func TestGetRandomCrypto(t *testing.T) {
 		{
 			name:       "success",
 			serviceRes: nil,
+			mock:       mockCrypto,
 			want:       expected{status: http.StatusOK, err: assert.Nil},
+			method:     http.MethodGet,
+			PATH:       "/api/v1/crypto/randomcrypto",
+		},
+		{
+			name:       "partial content",
+			serviceRes: nil,
+			mock:       mockCryptoPartial,
+			want:       expected{status: http.StatusPartialContent, err: assert.Nil},
 			method:     http.MethodGet,
 			PATH:       "/api/v1/crypto/randomcrypto",
 		},
@@ -175,7 +206,7 @@ func TestGetRandomCrypto(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			mockService := mocks.NewWebappService(t)
-			mockService.On("GetRandomCrypto").Return(mockCrypto, tt.serviceRes).Once()
+			mockService.On("GetRandomCrypto").Return(tt.mock, tt.serviceRes).Once()
 
 			payload, err := json.Marshal(mockCrypto)
 			assert.NoError(t, err)

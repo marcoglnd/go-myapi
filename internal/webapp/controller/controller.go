@@ -37,5 +37,11 @@ func (w WebappController) GetCryptoById(ctx *gin.Context) {
 
 func (w WebappController) GetRandomCrypto(ctx *gin.Context) {
 	resp := w.webapp.GetRandomCrypto()
+	for _, crypto := range resp {
+		if crypto.Partial {
+			ctx.JSON(http.StatusPartialContent, resp)
+			return
+		}
+	}
 	ctx.JSON(http.StatusOK, resp)
 }
