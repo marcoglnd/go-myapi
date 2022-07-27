@@ -17,31 +17,25 @@ func NewWebappController(webapp domain.WebappService) *WebappController {
 	}
 }
 
-func (w WebappController) GetData() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		response := domain.DataResponse{
-			Data: ctx.Query("data"),
-		}
-		ctx.JSON(http.StatusOK, response)
+func (w WebappController) GetData(ctx *gin.Context) {
+	response := domain.DataResponse{
+		Data: ctx.Query("data"),
 	}
+	ctx.JSON(http.StatusOK, response)
 }
 
-func (w WebappController) GetCryptoById() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		id := ctx.Param("id")
-		resp, err := w.webapp.GetCryptoById(id)
-		if err != nil {
-			ctx.JSON(http.StatusPartialContent, resp)
-			return
-		}
-
-		ctx.JSON(http.StatusOK, resp)
+func (w WebappController) GetCryptoById(ctx *gin.Context) {
+	id := ctx.Param("id")
+	resp, err := w.webapp.GetCryptoById(id)
+	if err != nil {
+		ctx.JSON(http.StatusPartialContent, resp)
+		return
 	}
+
+	ctx.JSON(http.StatusOK, resp)
 }
 
-func (w WebappController) GetRandomCrypto() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		resp := w.webapp.GetRandomCrypto()
-		ctx.JSON(http.StatusOK, resp)
-	}
+func (w WebappController) GetRandomCrypto(ctx *gin.Context) {
+	resp := w.webapp.GetRandomCrypto()
+	ctx.JSON(http.StatusOK, resp)
 }

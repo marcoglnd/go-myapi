@@ -12,8 +12,8 @@ func webappRouter(superRouter *gin.RouterGroup) {
 
 	router := superRouter.Group("crypto")
 	{
-		router.GET("/myapi", webappController.GetData())
-		router.GET("/:id", webappController.GetCryptoById())
-		router.GET("/randomcrypto", webappController.GetRandomCrypto())
+		router.GET("/myapi", webappController.GetData)
+		router.GET("/:id", webappController.GetCryptoById)
+		router.GET("/randomcrypto", webappController.GetRandomCrypto)
 	}
 }

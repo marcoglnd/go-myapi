@@ -34,7 +34,7 @@ func TestGetData(t *testing.T) {
 
 		webappController := WebappController{webapp: mockService}
 
-		engine.GET("/myapi", webappController.GetData())
+		engine.GET("/myapi", webappController.GetData)
 
 		engine.ServeHTTP(rec, req)
 
@@ -109,7 +109,7 @@ func TestGetCryptoById(t *testing.T) {
 
 			webappController := WebappController{webapp: mockService}
 
-			engine.GET(tt.route, webappController.GetCryptoById())
+			engine.GET(tt.route, webappController.GetCryptoById)
 
 			engine.ServeHTTP(rec, req)
 
@@ -187,7 +187,7 @@ func TestGetRandomCrypto(t *testing.T) {
 
 			webappController := WebappController{webapp: mockService}
 
-			engine.GET(tt.PATH, webappController.GetRandomCrypto())
+			engine.GET(tt.PATH, webappController.GetRandomCrypto)
 
 			engine.ServeHTTP(rec, req)
 
